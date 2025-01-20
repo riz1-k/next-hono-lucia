@@ -18,7 +18,7 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import { logout } from '@/server/actions';
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
+import { BadgeCheck, Bell, ChevronsUpDown, LogOut } from 'lucide-react';
 
 export function NavUser({
     user,
