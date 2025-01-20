@@ -21,7 +21,6 @@ import { Resend } from 'resend';
 export const getUser = cache(async () => {
     const sessionId = (await cookies()).get(lucia.sessionCookieName)?.value;
     if (!sessionId) return null;
-
     const { user } = await lucia.validateSession(sessionId);
     return user;
 });
@@ -31,7 +30,6 @@ export async function ensureAuthenticated() {
     if (!user) {
         throw redirect(Routes.login());
     }
-
     return user;
 }
 
@@ -44,9 +42,9 @@ function getSmtpTransporter() {
         new SMTPTransport({
             auth: requiresAuth
                 ? {
-                      user: serverEnvs.SMTP_USERNAME,
-                      pass: serverEnvs.SMTP_PASSWORD,
-                  }
+                    user: serverEnvs.SMTP_USERNAME,
+                    pass: serverEnvs.SMTP_PASSWORD,
+                }
                 : undefined,
             host: serverEnvs.SMTP_HOST,
             port: serverEnvs.SMTP_PORT,
