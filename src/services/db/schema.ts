@@ -47,10 +47,7 @@ export const users = createTable(
             () => new Date()
         ),
     },
-    (table) => ({
-        emailIdx: index('email_idx').on(table.email),
-        nameIdx: index('name_idx').on(table.name),
-    })
+    (table) => ([index('email_idx').on(table.email), index('name_idx').on(table.name)])
 );
 
 export const appointments = createTable('appointments', {
@@ -78,10 +75,7 @@ export const appointments = createTable('appointments', {
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
         () => new Date()
     ),
-}, (table) => ({
-    timeIdx: index('appointment_time_idx').on(table.startTime, table.endTime),
-    statusIdx: index('appointment_status_idx').on(table.status),
-}));
+}, (table) => ([index('appointment_time_idx').on(table.startTime, table.endTime), index('appointment_status_idx').on(table.status)]));
 
 export const appointmentSlots = createTable('appointment_slots', {
     id: varchar('id', {
@@ -108,9 +102,7 @@ export const appointmentSlots = createTable('appointment_slots', {
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
         () => new Date()
     ),
-}, (table) => ({
-    slotTimeIdx: index('slot_time_idx').on(table.startTime, table.endTime),
-}));
+}, (table) => ([index('slot_time_idx').on(table.startTime, table.endTime)]));
 
 export const payments = createTable('payments', {
     id: varchar('id', { length: 255 })
@@ -138,10 +130,7 @@ export const payments = createTable('payments', {
     updatedAt: timestamp("updated_at", { withTimezone: true })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
-}, (table) => ({
-    statusIdx: index('payment_status_idx').on(table.paymentStatus),
-    transactionIdx: index('transaction_id_idx').on(table.transactionId),
-}));
+}, (table) => ([index('payment_status_idx').on(table.paymentStatus), index('transaction_id_idx').on(table.transactionId)]));
 
 export const emailVerificationCodes = createTable('email_verification_codes', {
     id: serial('id').primaryKey(),
