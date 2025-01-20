@@ -4,12 +4,14 @@ import {
     index,
     numeric,
     pgEnum,
-    pgTable,
     serial,
     text,
     timestamp,
     varchar,
 } from 'drizzle-orm/pg-core';
+import { pgTableCreator } from 'drizzle-orm/pg-core';
+
+export const createTable = pgTableCreator(name => `appointment.${name}`);
 
 export const USER_ROLES = ["user", "admin"] as const;
 export const roleEnum = pgEnum('role', USER_ROLES);
@@ -29,7 +31,7 @@ export const paymentStatusEnum = pgEnum('payment_status', PAYMENT_STATUS);
 export const PAYMENT_PROCESSORS = ["razorpay"] as const;
 export const paymentProcessorEnum = pgEnum('payment_processor', PAYMENT_PROCESSORS);
 
-export const users = pgTable(
+export const users = createTable(
     'users',
     {
         id: varchar('id', {
@@ -69,7 +71,7 @@ export const users = pgTable(
     })
 );
 
-export const appointments = pgTable('appointments', {
+export const appointments = createTable('appointments', {
     id: varchar('id', {
         length: 255,
     }).primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -99,7 +101,7 @@ export const appointments = pgTable('appointments', {
     statusIdx: index('appointment_status_idx').on(table.status),
 }));
 
-export const appointmentSlots = pgTable('appointment_slots', {
+export const appointmentSlots = createTable('appointment_slots', {
     id: varchar('id', {
         length: 255,
     }).primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -128,7 +130,7 @@ export const appointmentSlots = pgTable('appointment_slots', {
     slotTimeIdx: index('slot_time_idx').on(table.startTime, table.endTime),
 }));
 
-export const payments = pgTable('payments', {
+export const payments = createTable('payments', {
     id: varchar('id', { length: 255 })
         .primaryKey()
         .$defaultFn(() => crypto.randomUUID()),
@@ -159,7 +161,7 @@ export const payments = pgTable('payments', {
     transactionIdx: index('transaction_id_idx').on(table.transactionId),
 }));
 
-export const emailVerificationCodes = pgTable('email_verification_codes', {
+export const emailVerificationCodes = createTable('email_verification_codes', {
     id: serial('id').primaryKey(),
     code: varchar('code', {
         length: 8,
@@ -174,7 +176,7 @@ export const emailVerificationCodes = pgTable('email_verification_codes', {
         .references(() => users.id),
 });
 
-export const sessions = pgTable('sessions', {
+export const sessions = createTable('sessions', {
     id: text('id').primaryKey(),
     expiresAt: timestamp('expires_at', {
         withTimezone: true,
