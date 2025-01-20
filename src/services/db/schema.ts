@@ -1,6 +1,7 @@
 import { relations, sql } from 'drizzle-orm';
 import {
     boolean,
+    index,
     numeric,
     pgEnum,
     pgTable,
@@ -13,8 +14,20 @@ import {
 export const USER_ROLES = ["user", "admin"] as const;
 export const roleEnum = pgEnum('role', USER_ROLES);
 
+export const APPOINTMENT_STATUS = ["active", "completed", "cancelled"] as const;
+export const appointmentStatusEnum = pgEnum('appointment_status', APPOINTMENT_STATUS);
+
+export const SLOT_STATUS = ["booked", "completed", "cancelled"] as const;
+export const slotStatusEnum = pgEnum('slot_status', SLOT_STATUS);
+
 export const PAYMENT_TYPES = ["online", "offline"] as const;
 export const paymentTypeEnum = pgEnum('payment_type', PAYMENT_TYPES);
+
+export const PAYMENT_STATUS = ["pending", "completed", "failed", "refunded"] as const;
+export const paymentStatusEnum = pgEnum('payment_status', PAYMENT_STATUS);
+
+export const PAYMENT_PROCESSORS = ["razorpay"] as const;
+export const paymentProcessorEnum = pgEnum('payment_processor', PAYMENT_PROCESSORS);
 
 export const users = pgTable(
     'users',
@@ -26,20 +39,23 @@ export const users = pgTable(
             .$defaultFn(() => crypto.randomUUID()),
         email: varchar('email', {
             length: 255,
-        }).notNull(),
+        }).notNull().unique(),
         role: roleEnum().notNull(),
         emailVerified: boolean('email_verified').default(false),
         agreedToTerms: boolean('agreed_to_terms').default(false),
         hashedPassword: varchar('hashed_password').default('').notNull(),
         googleId: varchar('google_id', {
             length: 255,
-        }),
+        }).unique(),
         name: varchar('name', {
             length: 255,
         }),
         picture: varchar('picture', {
-            length: 255,
+            length: 512,
         }),
+        phoneNumber: varchar('phone_number', { length: 20 }),
+        lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
+        deletedAt: timestamp('deleted_at', { withTimezone: true }),
         createdAt: timestamp("created_at", { withTimezone: true })
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
@@ -47,6 +63,10 @@ export const users = pgTable(
             () => new Date()
         ),
     },
+    (table) => ({
+        emailIdx: index('email_idx').on(table.email),
+        nameIdx: index('name_idx').on(table.name),
+    })
 );
 
 export const appointments = pgTable('appointments', {
@@ -61,9 +81,10 @@ export const appointments = pgTable('appointments', {
         withTimezone: true,
         mode: 'date',
     }).notNull(),
-    appointmentPrice: numeric('appointment_price', {
+    appointmentFee: numeric('appointment_fee', {
         precision: 2,
     }).notNull(),
+    status: appointmentStatusEnum().notNull(),
     creator: varchar('creator', {
         length: 255,
     }).notNull().references(() => users.id),
@@ -73,7 +94,10 @@ export const appointments = pgTable('appointments', {
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
         () => new Date()
     ),
-});
+}, (table) => ({
+    timeIdx: index('appointment_time_idx').on(table.startTime, table.endTime),
+    statusIdx: index('appointment_status_idx').on(table.status),
+}));
 
 export const appointmentSlots = pgTable('appointment_slots', {
     id: varchar('id', {
@@ -93,34 +117,47 @@ export const appointmentSlots = pgTable('appointment_slots', {
         withTimezone: true,
         mode: 'date',
     }).notNull(),
+    status: slotStatusEnum().notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
         () => new Date()
     ),
-});
+}, (table) => ({
+    slotTimeIdx: index('slot_time_idx').on(table.startTime, table.endTime),
+}));
+
 export const payments = pgTable('payments', {
-    id: varchar('id', {
-        length: 255,
-    }).primaryKey().$defaultFn(() => crypto.randomUUID()),
-    payer: varchar('payer', {
-        length: 255,
-    }).notNull().references(() => users.id),
-    paymentType: paymentTypeEnum().notNull(),
-    slotId: varchar('slot_id', {
-        length: 255,
-    }).notNull().references(() => appointmentSlots.id),
-    paidAmount: numeric('paid_amount', {
-        precision: 2,
-    }).notNull(),
+    id: varchar('id', { length: 255 })
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    payer: varchar('payer', { length: 255 })
+        .notNull()
+        .references(() => users.id),
+    paymentType: paymentTypeEnum('payment_type').notNull(),
+    paymentStatus: paymentStatusEnum('payment_status')
+        .notNull()
+        .default('pending'),
+    slotId: varchar('slot_id', { length: 255 })
+        .notNull()
+        .references(() => appointmentSlots.id),
+    paidAmount: numeric('paid_amount', { precision: 10, scale: 2 }).notNull(),
+    transactionId: varchar('transaction_id', { length: 255 }),
+    paymentProcessor: paymentProcessorEnum('payment_processor').notNull(),
+    paymentMetadata: text('payment_metadata'),
+    refundAmount: numeric('refund_amount', { precision: 10, scale: 2 }),
+    refundReason: text('refund_reason'),
     createdAt: timestamp("created_at", { withTimezone: true })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-        () => new Date()
-    ),
-});
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+        .default(sql`CURRENT_TIMESTAMP`)
+        .notNull(),
+}, (table) => ({
+    statusIdx: index('payment_status_idx').on(table.paymentStatus),
+    transactionIdx: index('transaction_id_idx').on(table.transactionId),
+}));
 
 export const emailVerificationCodes = pgTable('email_verification_codes', {
     id: serial('id').primaryKey(),
@@ -152,6 +189,9 @@ export const sessions = pgTable('sessions', {
 export const usersRelations = relations(users, ({ many }) => ({
     emailVerificationCodes: many(emailVerificationCodes),
     sessions: many(sessions),
+    createdAppointments: many(appointments, { relationName: 'createdAppointments' }),
+    bookedAppointments: many(appointmentSlots, { relationName: 'bookedAppointments' }),
+    payments: many(payments),
 }));
 
 export const emailVerificationCodesRelations = relations(emailVerificationCodes, ({ one }) => ({
