@@ -39,10 +39,8 @@ export const sendResetCode = new OpenAPIHono<{
         const { email } = c.req.valid('json');
         const db = c.get('db');
 
-        const normalizedEmail = email.toUpperCase();
-
         const existingUser = await db.query.users.findFirst({
-            where: eq(users.normalizedEmail, normalizedEmail),
+            where: eq(users.email, email),
         });
 
         // Return success even if user doesn't exist to prevent email enumeration

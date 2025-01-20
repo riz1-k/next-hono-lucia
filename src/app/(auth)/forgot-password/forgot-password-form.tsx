@@ -58,7 +58,7 @@ export function ForgotPasswordForm() {
                         </FormItem>
                     )}
                 />
-                <Button type='submit' isPending={isPending}>
+                <Button type='submit' isPending={isPending} className='w-full'>
                     Send Reset Code
                 </Button>
             </form>

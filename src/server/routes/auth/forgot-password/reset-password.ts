@@ -44,10 +44,8 @@ export const resetPassword = new OpenAPIHono<{
         const { email, confirmationCode, newPassword } = c.req.valid('json');
         const db = c.get('db');
 
-        const normalizedEmail = email.toUpperCase();
-
         const existingUser = await db.query.users.findFirst({
-            where: eq(users.normalizedEmail, normalizedEmail),
+            where: eq(users.email, email),
             with: {
                 emailVerificationCodes: true,
             },
