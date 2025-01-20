@@ -109,7 +109,7 @@ export function RegisterForm() {
                         </FormItem>
                     )}
                 />
-                <Button type='submit' isPending={isPending}>
+                <Button type='submit' isPending={isPending} className="w-full">
                     Continue
                 </Button>
             </form>

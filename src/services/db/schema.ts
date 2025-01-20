@@ -5,7 +5,6 @@ import {
     serial,
     text,
     timestamp,
-    uniqueIndex,
     varchar,
 } from 'drizzle-orm/pg-core';
 
@@ -18,9 +17,6 @@ export const users = pgTable(
             .primaryKey()
             .$defaultFn(() => crypto.randomUUID()),
         email: varchar('email', {
-            length: 255,
-        }).notNull(),
-        normalizedEmail: varchar('normalized_email', {
             length: 255,
         }).notNull(),
         emailVerified: boolean('email_verified').default(false),
@@ -36,11 +32,6 @@ export const users = pgTable(
             length: 255,
         }),
     },
-    table => {
-        return {
-            normalizedEmailIdx: uniqueIndex('normalized_email_idx').on(table.normalizedEmail),
-        };
-    }
 );
 
 export const emailVerificationCodes = pgTable('email_verification_codes', {

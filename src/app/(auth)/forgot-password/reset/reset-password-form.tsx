@@ -186,7 +186,7 @@ export function ResetPasswordForm({ email }: { email: string }) {
                         </FormItem>
                     )}
                 />
-                <Button type='submit' isPending={isPending}>
+                <Button type='submit' isPending={isPending} className='w-full'>
                     Reset Password
                 </Button>
             </form>

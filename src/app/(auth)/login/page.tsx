@@ -27,7 +27,7 @@ export default async function LoginPage() {
                 <CardContent>
                     <LoginForm />
                 </CardContent>
-                <CardFooter className='flex-col items-start gap-2 text-sm'>
+                <CardFooter className='flex-col justify-center gap-2 text-sm'>
                     <div>
                         <span>Don&apos;t have an account? </span>
                         <Link className='text-blue-600 underline' href={Routes.register()}>

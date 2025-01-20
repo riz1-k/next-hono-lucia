@@ -47,10 +47,8 @@ export const sendRegistrationCode = new OpenAPIHono<{
             });
         }
 
-        const normalizedEmail = email.toUpperCase();
-
         const existingUser = await db.query.users.findFirst({
-            where: eq(users.normalizedEmail, normalizedEmail),
+            where: eq(users.email, email),
         });
 
         if (existingUser && existingUser.emailVerified) {
@@ -65,7 +63,6 @@ export const sendRegistrationCode = new OpenAPIHono<{
                 .values({
                     id,
                     email: email,
-                    normalizedEmail,
                     agreedToTerms: agree,
                 })
                 .returning({ insertedUserId: users.id });

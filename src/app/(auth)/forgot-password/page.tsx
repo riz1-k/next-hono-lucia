@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
                 <CardContent>
                     <ForgotPasswordForm />
                 </CardContent>
-                <CardFooter className='flex-col items-start gap-2 text-sm'>
+                <CardFooter className='flex-col justify-center gap-2 text-sm'>
                     <div>
                         <span>Remember your password? </span>
                         <Link className='text-blue-600 underline' href={Routes.login()}>

@@ -8,10 +8,9 @@ export async function createUser(googleId: string, email: string, name: string, 
             .insert(users)
             .values({
                 googleId,
-                email: email.toUpperCase(),
+                email,
                 name,
                 picture,
-                normalizedEmail: email,
                 emailVerified: true,
             })
             .returning({
