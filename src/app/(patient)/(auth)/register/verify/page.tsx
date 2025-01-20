@@ -1,4 +1,4 @@
-import { VerificationForm } from '@/app/(auth)/register/verify/verification-form';
+import { VerificationForm } from './verification-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Routes } from '@/lib/routes';
 import type { Metadata } from 'next';

@@ -24,6 +24,7 @@ export const sendRegistrationCode = new OpenAPIHono<{
                             example: {
                                 email: 'hey@example.com',
                                 agree: true,
+                                role: "user"
                             },
                         }),
                     },
@@ -38,7 +39,7 @@ export const sendRegistrationCode = new OpenAPIHono<{
         },
     }),
     async c => {
-        const { agree, email } = c.req.valid('json');
+        const { agree, email, role } = c.req.valid('json');
         const db = c.get('db');
 
         if (!agree) {
@@ -64,6 +65,7 @@ export const sendRegistrationCode = new OpenAPIHono<{
                     id,
                     email: email,
                     agreedToTerms: agree,
+                    role
                 })
                 .returning({ insertedUserId: users.id });
         } else {

@@ -1,4 +1,4 @@
-import { RegisterForm } from '@/app/(auth)/register/register-form';
+import { LoginForm } from './login-form';
 import {
     Card,
     CardContent,
@@ -12,26 +12,26 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-    title: 'Register',
-    description: 'Register your account',
+    title: 'Login',
+    description: 'Welcome back!',
 };
 
-export default function RegisterPage() {
+export default async function LoginPage() {
     return (
         <div className='flex h-full items-center'>
             <Card className='mx-auto w-[32rem] max-w-lg'>
                 <CardHeader>
-                    <CardTitle>Get Started</CardTitle>
-                    <CardDescription>Welcome!</CardDescription>
+                    <CardTitle>Login</CardTitle>
+                    <CardDescription>Welcome back!</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <RegisterForm />
+                    <LoginForm />
                 </CardContent>
                 <CardFooter className='flex-col justify-center gap-2 text-sm'>
                     <div>
-                        <span>Already have an account? </span>
-                        <Link className='text-blue-600 underline' href={Routes.login()}>
-                            Login
+                        <span>Don&apos;t have an account? </span>
+                        <Link className='text-blue-600 underline' href={Routes.register()}>
+                            Register
                         </Link>
                     </div>
                 </CardFooter>

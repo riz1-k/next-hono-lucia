@@ -1,4 +1,4 @@
-import { ForgotPasswordForm } from '@/app/(auth)/forgot-password/forgot-password-form';
+import { RegisterForm } from './register-form';
 import {
     Card,
     CardContent,
@@ -12,24 +12,24 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-    title: 'Forgot Password',
-    description: 'Reset your password',
+    title: 'Register',
+    description: 'Register your account',
 };
 
-export default function ForgotPasswordPage() {
+export default function RegisterPage() {
     return (
         <div className='flex h-full items-center'>
             <Card className='mx-auto w-[32rem] max-w-lg'>
                 <CardHeader>
-                    <CardTitle>Reset Password</CardTitle>
-                    <CardDescription>Enter your email to reset your password</CardDescription>
+                    <CardTitle>Get Started</CardTitle>
+                    <CardDescription>Welcome!</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <ForgotPasswordForm />
+                    <RegisterForm />
                 </CardContent>
                 <CardFooter className='flex-col justify-center gap-2 text-sm'>
                     <div>
-                        <span>Remember your password? </span>
+                        <span>Already have an account? </span>
                         <Link className='text-blue-600 underline' href={Routes.login()}>
                             Login
                         </Link>

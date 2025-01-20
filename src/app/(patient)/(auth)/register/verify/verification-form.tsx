@@ -26,7 +26,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { useSendResetCode } from '../../forgot-password/forgot-password-form';
+import { useSendResetCode } from '@/app/forgot-password/forgot-password-form';
 import { useTimer } from '@/lib/hooks/useTimer';
 import { Separator } from '@/components/ui/separator';
 import { z } from 'zod';

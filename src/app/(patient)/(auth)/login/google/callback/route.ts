@@ -59,7 +59,7 @@ export async function GET(request: Request): Promise<Response> {
         });
     }
 
-    const user = await createUser(googleId, email, name, picture);
+    const user = await createUser(googleId, email, name, picture, 'user');
     const sessionToken = generateSessionToken();
     const session = await createSession(sessionToken, user.id);
     setSessionTokenCookie(session.id, session.expiresAt);

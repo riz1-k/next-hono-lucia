@@ -1,8 +1,10 @@
+import { USER_ROLES } from '@/services/db/db-enums';
 import { z } from 'zod';
 
 export const sendRegistrationCodeSchema = z.object({
     agree: z.boolean(),
     email: z.string().email(),
+    role: z.enum(USER_ROLES)
 });
 
 export type SendRegistrationCode = z.infer<typeof sendRegistrationCodeSchema>;
