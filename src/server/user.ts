@@ -1,9 +1,14 @@
 import { db } from '@/services/db';
-import type { USER_ROLES } from '@/services/db/db-enums';
-import { users } from '@/services/db/schema';
+import { USER_ROLES, users } from '@/services/db/schema';
 import { eq } from 'drizzle-orm';
 
-export async function createUser(googleId: string, email: string, name: string, picture: string, role: typeof USER_ROLES[number]) {
+export async function createUser(
+    googleId: string,
+    email: string,
+    name: string,
+    picture: string,
+    role: (typeof USER_ROLES)[number]
+) {
     const newUser = (
         await db
             .insert(users)
@@ -13,7 +18,7 @@ export async function createUser(googleId: string, email: string, name: string, 
                 name,
                 picture,
                 emailVerified: true,
-                role
+                role,
             })
             .returning({
                 id: users.id,
